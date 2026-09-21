@@ -8,6 +8,16 @@ No accounts. No backend. Static HTML/CSS/JS + [D3](https://d3js.org/) from a CDN
 
 This is **defence-oriented education** — high-level mechanisms and mitigations, not exploit recipes or payloads.
 
+## Demo
+
+[![Usage demo](assets/usage.mov)](assets/usage.mov)
+
+<video src="assets/usage.mov" controls width="720" title="AI Attack & Defence Map usage demo">
+  <a href="assets/usage.mov">Download the usage demo (.mov)</a>
+</video>
+
+Short walkthrough: Tree → attack note → Animate attack / Defences.
+
 ## Who it’s for
 
 - Security engineers and AppSec reviewing LLM / RAG / agent designs
@@ -76,12 +86,9 @@ Tablets are usable (pinch-zoom tree, Stages view). Phones work but the horizonta
 ```
 index.html          App shell
 css/                Layout, tree, path overlay
-js/
-  tree.js           Tree + Stages + search + notes
-  animate.js        Attack / defence path player
-  diagrams.js       Stage stack SVGs
-  glossary.js       Shortform → full-form tooltips
+js/                 Tree, Stages, search, animate, glossary
 data/tree.json      All attacks, defences, links, animate data
+assets/usage.mov    Short UI walkthrough (linked above)
 ```
 
 
