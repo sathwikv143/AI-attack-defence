@@ -10,9 +10,7 @@ This is **defence-oriented education** — high-level mechanisms and mitigations
 
 ## Demo
 
-<video src="assets/usage.mov" controls width="720" title="AI Attack & Defence Map usage demo"></video>
-
-[Download usage demo (.mov)](assets/usage.mov) — Tree → attack note → Animate attack / Defences.
+![](assets/usage.mov)
 
 ## Who it’s for
 
