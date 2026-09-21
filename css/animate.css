@@ -1,0 +1,390 @@
+/* Attack / defence path overlay */
+
+.path-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(1, 4, 9, 0.82);
+}
+
+.path-overlay[hidden] {
+  display: none !important;
+}
+
+.path-dialog {
+  width: min(940px, 100%);
+  max-height: min(92vh, 760px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-panel);
+  overflow: hidden;
+}
+
+.path-dialog.is-attack-mode {
+  border-color: rgba(248, 81, 73, 0.35);
+}
+
+.path-dialog.is-defence-mode {
+  border-color: rgba(63, 185, 80, 0.4);
+}
+
+.path-dialog-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.path-dialog-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.path-dialog-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.path-dialog-kicker {
+  margin: 0 0 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--attack);
+}
+
+.path-dialog.is-defence-mode .path-dialog-kicker {
+  color: var(--defence);
+}
+
+.path-mode-toggle {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.path-mode {
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+}
+
+.path-mode + .path-mode {
+  border-left: 1px solid var(--line);
+}
+
+.path-mode.is-active {
+  color: var(--ink);
+}
+
+.path-mode#path-mode-attack.is-active {
+  background: rgba(248, 81, 73, 0.14);
+}
+
+.path-mode#path-mode-defence.is-active {
+  background: rgba(63, 185, 80, 0.14);
+}
+
+.path-mode:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.path-close {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+
+.path-close:hover {
+  border-color: var(--stage);
+}
+
+.path-dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 1.35rem 1.35rem 1rem;
+  background: #0d1117;
+}
+
+.path-svg-host {
+  width: 100%;
+}
+
+.path-svg-host .path-svg,
+.path-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+}
+
+.path-node.is-clickable {
+  cursor: pointer;
+}
+
+.path-node.is-clickable .path-comp {
+  transition: fill 0.25s ease, stroke 0.25s ease, filter 0.25s ease, stroke-width 0.15s ease;
+}
+
+.path-node.is-clickable:hover .path-comp {
+  stroke: #8b949e;
+  stroke-width: 2;
+}
+
+.path-dialog.is-attack-mode .path-node.is-clickable.has-content:hover .path-comp {
+  stroke: rgba(248, 81, 73, 0.85);
+}
+
+.path-dialog.is-defence-mode .path-node.is-clickable.has-content:hover .path-comp {
+  stroke: rgba(63, 185, 80, 0.85);
+}
+
+.path-node.is-clickable:focus-visible {
+  outline: none;
+}
+
+.path-node.is-clickable:focus-visible .path-comp {
+  stroke: #58a6ff;
+  stroke-width: 2;
+}
+
+.path-comp {
+  fill: #161b22;
+  stroke: #30363d;
+  stroke-width: 1.5;
+  transition: fill 0.25s ease, stroke 0.25s ease, filter 0.25s ease;
+}
+
+.path-comp-label {
+  fill: #8b949e;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  font-size: 12px;
+  text-anchor: middle;
+  pointer-events: none;
+  transition: fill 0.25s ease;
+}
+
+.path-shield {
+  pointer-events: none;
+}
+
+.path-edge {
+  fill: none;
+  stroke: #30363d;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke 0.25s ease, stroke-width 0.25s ease, opacity 0.25s ease;
+  marker-end: url(#path-arrow);
+}
+
+.path-edge-loop {
+  stroke-dasharray: 4 5;
+  opacity: 0.45;
+  marker-end: none;
+}
+
+/* Attack highlights */
+.path-comp.is-done {
+  stroke: rgba(248, 81, 73, 0.55);
+  fill: rgba(248, 81, 73, 0.08);
+}
+
+.path-comp.is-active {
+  stroke: #f85149;
+  fill: rgba(248, 81, 73, 0.18);
+  filter: drop-shadow(0 0 6px rgba(248, 81, 73, 0.45));
+}
+
+.path-node.is-active .path-comp-label,
+.path-node.is-done .path-comp-label,
+.path-node.is-secure .path-comp-label,
+.path-node.is-secure-active .path-comp-label {
+  fill: #e6edf3;
+}
+
+.path-edge.is-done {
+  stroke: rgba(248, 81, 73, 0.45);
+}
+
+.path-edge.is-active {
+  stroke: #f85149;
+  stroke-width: 2.75;
+}
+
+/* Defence highlights */
+.path-comp.is-secure {
+  stroke: rgba(63, 185, 80, 0.55);
+  fill: rgba(63, 185, 80, 0.1);
+}
+
+.path-comp.is-secure-active {
+  stroke: #3fb950;
+  fill: rgba(63, 185, 80, 0.22);
+  filter: drop-shadow(0 0 6px rgba(63, 185, 80, 0.45));
+}
+
+.path-edge.is-blocked {
+  stroke: #3fb950;
+  stroke-width: 2.5;
+  stroke-dasharray: 5 4;
+  opacity: 0.9;
+}
+
+.path-shield-disc {
+  fill: #0d1117;
+  stroke: #3fb950;
+  stroke-width: 1.5;
+}
+
+.path-shield-mark {
+  fill: rgba(63, 185, 80, 0.85);
+  stroke: none;
+}
+
+.path-caption {
+  margin: 1.1rem 0 0;
+  min-height: 3.4rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg-panel);
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.path-dialog.is-defence-mode .path-caption {
+  border-color: rgba(63, 185, 80, 0.35);
+}
+
+.path-dialog.is-attack-mode .path-caption {
+  border-color: rgba(248, 81, 73, 0.3);
+}
+
+.path-caption-step {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.path-caption-list {
+  margin: 0.15rem 0 0;
+  padding-left: 1.15rem;
+}
+
+.path-caption-list li {
+  margin: 0.25rem 0 0;
+}
+
+.path-caption-list li:first-child {
+  margin-top: 0;
+}
+
+.path-caption strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.path-dialog-foot {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--line);
+  background: var(--bg-panel);
+}
+
+.path-dialog-foot[hidden] {
+  display: none !important;
+}
+
+.path-dialog-foot .btn-tool.is-primary {
+  border-color: var(--attack);
+  color: var(--ink);
+  background: rgba(248, 81, 73, 0.12);
+}
+
+.path-dialog-foot .btn-tool.is-primary.is-defence {
+  border-color: var(--defence);
+  background: rgba(63, 185, 80, 0.12);
+}
+
+.path-progress {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+}
+
+.path-hint {
+  margin-left: auto;
+  margin-right: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--ink-dim);
+}
+
+.btn-animate-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.65rem 0 0;
+}
+
+.btn-animate {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--attack);
+  background: rgba(248, 81, 73, 0.1);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.btn-animate:hover {
+  background: rgba(248, 81, 73, 0.18);
+}
+
+.btn-animate.is-defence {
+  border-color: var(--defence);
+  background: rgba(63, 185, 80, 0.1);
+}
+
+.btn-animate.is-defence:hover {
+  background: rgba(63, 185, 80, 0.18);
+}

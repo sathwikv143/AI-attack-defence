@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Collapsible tree map of AI attacks and defences — OSINT Framework style." />
+  <title>AI Attack &amp; Defence Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/tree.css" />
+  <link rel="stylesheet" href="css/animate.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <h1>AI Attack &amp; Defence Map</h1>
+    </div>
+    <div class="view-toggle" role="group" aria-label="Map view">
+      <button type="button" class="btn-view is-active" id="btn-view-tree" aria-pressed="true">Tree</button>
+      <button type="button" class="btn-view" id="btn-view-stages" aria-pressed="false">Stages</button>
+    </div>
+    <p class="legend" aria-hidden="true">
+      <span class="leg leg-stage">stage</span>
+      <span class="leg leg-attack">attack</span>
+      <span class="leg leg-defence">defence</span>
+    </p>
+    <div class="topbar-actions">
+      <button type="button" class="btn-tool" id="btn-fit" title="Clear pan and zoom">Fit</button>
+      <button type="button" class="btn-tool" id="btn-reset" title="Back to Training stage">Reset</button>
+      <button type="button" class="btn-notes" id="btn-help" aria-expanded="false">Help</button>
+    </div>
+  </header>
+
+  <div class="status-bar" id="status-bar">
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Current path">
+      <span class="crumb is-root">Map</span>
+    </nav>
+    <div class="search-wrap">
+      <label class="visually-hidden" for="search-input">Search attacks</label>
+      <input type="search" id="search-input" class="search-input" placeholder="Search attacks, tags, tools…" autocomplete="off" />
+      <ul class="search-results" id="search-results" hidden role="listbox"></ul>
+    </div>
+    <p class="status-hint" id="status-hint">Click a blue stage · then a red attack · then Attack or a defence</p>
+  </div>
+
+  <main class="tree-main">
+    <div id="tree-host" class="tree-host" role="application" aria-label="Attack and defence tree" tabindex="0"></div>
+
+    <div id="stages-host" class="stages-host" hidden>
+      <div class="stages-columns" id="stages-columns"></div>
+      <aside class="stage-note" id="stage-note" hidden></aside>
+    </div>
+
+    <div class="coach" id="coach" hidden>
+      <ol class="coach-steps">
+        <li><strong>Stage</strong> — click a blue node (Training, <abbr class="gloss" title="Retrieval-Augmented Generation">RAG</abbr>…)</li>
+        <li><strong>Attack</strong> — click a red name to open it</li>
+        <li><strong>Learn</strong> — click <em>Attack</em> or a green defence for the note</li>
+      </ol>
+      <p class="coach-extra">Search to jump · Drag to pan · Esc closes notes</p>
+      <button type="button" class="btn-coach" id="coach-dismiss">Got it</button>
+    </div>
+  </main>
+
+  <aside class="notes" id="notes" hidden>
+    <button type="button" class="drawer-close" id="notes-close" aria-label="Close help">✕</button>
+    <h2>How to use</h2>
+    <ol>
+      <li>Click a <strong>stage</strong> (blue) to list its attacks. Opening one stage closes another.</li>
+      <li>Click an <strong>attack</strong> (red) to see Attack + Defences.</li>
+      <li>Click an <strong>end node</strong> (filled circle) to open its note and Resources. Esc closes.</li>
+      <li>Use <strong>Search</strong> to jump. Toggle <strong>Stages</strong> to scan by lifecycle column.</li>
+    </ol>
+    <p>Hollow circle = more inside. Filled circle = end of the branch.</p>
+    <p><strong>Fit</strong> clears pan/zoom · <strong>Reset</strong> returns to Training.</p>
+    <p>Pattern inspired by <a href="https://osintframework.com/" target="_blank" rel="noopener"><abbr class="gloss" title="Open-Source Intelligence">OSINT</abbr> Framework</a>.</p>
+  </aside>
+
+  <div class="path-overlay" id="path-overlay" hidden>
+    <div class="path-dialog is-attack-mode" role="dialog" aria-modal="true" aria-labelledby="path-title">
+      <header class="path-dialog-head">
+        <div class="path-dialog-titles">
+          <p class="path-dialog-kicker" id="path-kicker">Attack path</p>
+          <h2 id="path-title">Attack path</h2>
+        </div>
+        <div class="path-mode-toggle" role="group" aria-label="Path mode">
+          <button type="button" class="path-mode is-active" id="path-mode-attack">Attack</button>
+          <button type="button" class="path-mode" id="path-mode-defence">Defences</button>
+        </div>
+        <button type="button" class="path-close" id="path-close" aria-label="Close animation">✕</button>
+      </header>
+      <div class="path-dialog-body">
+        <div id="path-svg-host" class="path-svg-host"></div>
+        <p class="path-caption" id="path-caption">
+          <span class="path-caption-step">Ready</span>
+          Press Play, or click a component to inspect that step.
+        </p>
+      </div>
+      <footer class="path-dialog-foot">
+        <button type="button" class="btn-tool is-primary" id="path-play">Play</button>
+        <button type="button" class="btn-tool" id="path-replay">Replay</button>
+        <span class="path-hint" id="path-hint">Click a component · red = attack path</span>
+        <span class="path-progress" id="path-progress">0 / 0</span>
+      </footer>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script type="module" src="js/tree.js"></script>
+</body>
+</html>

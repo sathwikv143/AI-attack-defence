@@ -1,0 +1,344 @@
+/* D3 collapsible tree (OSINT Framework–style) */
+
+.tree-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.link {
+  fill: none;
+  stroke: #30363d;
+  stroke-width: 1.25px;
+}
+
+.link.link-attack {
+  stroke: rgba(248, 81, 73, 0.45);
+}
+
+.link.link-defence {
+  stroke: rgba(63, 185, 80, 0.45);
+}
+
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  stroke-width: 1.5px;
+  transition: r 0.15s ease, stroke-width 0.15s ease, fill 0.15s ease;
+}
+
+.node:hover circle {
+  stroke-width: 2.5px;
+}
+
+.node text {
+  fill: #e6edf3;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  font-size: 13px;
+  paint-order: stroke;
+  stroke: #0d1117;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.node text.soon {
+  fill: #6e7681;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.node .node-badge {
+  fill: #21262d;
+  stroke: #30363d;
+  stroke-width: 1px;
+}
+
+.node .node-badge-text {
+  fill: #8b949e;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9px;
+  paint-order: normal;
+  stroke: none;
+  pointer-events: none;
+}
+
+.node-stage .node-badge {
+  stroke: rgba(88, 166, 255, 0.55);
+}
+
+.node-attack .node-badge {
+  stroke: rgba(248, 81, 73, 0.55);
+}
+
+.node-defence-group .node-badge {
+  stroke: rgba(63, 185, 80, 0.55);
+}
+
+/* type colors — hollow when closed, filled when open */
+.node-root circle {
+  fill: #0d1117;
+  stroke: #c9d1d9;
+}
+
+.node-stage circle {
+  fill: #0d1117;
+  stroke: #58a6ff;
+}
+
+.node-attack circle,
+.node-attack-info circle {
+  fill: #0d1117;
+  stroke: #f85149;
+}
+
+.node-defence-group circle,
+.node-defence circle {
+  fill: #0d1117;
+  stroke: #3fb950;
+}
+
+.node-attack-info.is-leaf circle {
+  fill: #f85149;
+  fill-opacity: 0.55;
+}
+
+.node-root.is-open circle {
+  fill: #c9d1d9;
+}
+
+.node-stage.is-open circle {
+  fill: #58a6ff;
+}
+
+.node-attack.is-open circle {
+  fill: #f85149;
+}
+
+.node-defence-group.is-open circle {
+  fill: #3fb950;
+}
+
+.node-defence.is-leaf circle {
+  fill: #3fb950;
+  fill-opacity: 0.55;
+}
+
+.node.is-folder:not(.is-open) circle {
+  fill: #0d1117;
+}
+
+.node.is-selected circle {
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 5px rgba(248, 81, 73, 0.55));
+}
+
+.node-defence.is-selected circle,
+.node-defence-group.is-selected circle {
+  filter: drop-shadow(0 0 5px rgba(63, 185, 80, 0.55));
+}
+
+.node-soon circle {
+  stroke-dasharray: 3 2;
+  stroke: #6e7681;
+}
+
+/* Inline text box — same language as a node, for end leaves */
+.node-box-link {
+  fill: none;
+  stroke: #30363d;
+  stroke-width: 1.25px;
+  stroke-dasharray: 3 2;
+}
+
+.node-box-link.is-attack {
+  stroke: rgba(248, 81, 73, 0.55);
+}
+
+.node-box-link.is-defence {
+  stroke: rgba(63, 185, 80, 0.55);
+}
+
+.node-textbox {
+  pointer-events: all;
+}
+
+.node-textbox .box-panel {
+  box-sizing: border-box;
+  width: 300px;
+  padding: 0.65rem 0.75rem 0.7rem;
+  border-radius: 6px;
+  border: 1.5px solid #8b949e;
+  background: #161b22;
+  color: #e6edf3;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  font-size: 12.5px;
+  line-height: 1.45;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  cursor: default;
+  overflow: visible;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.node-textbox foreignObject {
+  overflow: visible;
+}
+
+.node-textbox.is-attack-info .box-panel,
+.node-textbox.is-attack .box-panel {
+  border-color: #f85149;
+  background: linear-gradient(180deg, rgba(248, 81, 73, 0.08), #161b22 40%);
+}
+
+.node-textbox.is-defence .box-panel {
+  border-color: #3fb950;
+  background: linear-gradient(180deg, rgba(63, 185, 80, 0.08), #161b22 40%);
+}
+
+.node-textbox.is-stage .box-panel {
+  border-color: #58a6ff;
+}
+
+.node-textbox .box-kicker {
+  margin: 0 0 0.45rem;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6e7681;
+}
+
+.node-textbox.is-attack-info .box-kicker,
+.node-textbox.is-attack .box-kicker {
+  color: #f85149;
+}
+
+.node-textbox.is-defence .box-kicker {
+  color: #3fb950;
+}
+
+.node-textbox .box-section {
+  margin: 0 0 0.55rem;
+}
+
+.node-textbox .box-section:last-of-type {
+  margin-bottom: 0;
+}
+
+.node-textbox .box-label {
+  display: block;
+  margin: 0 0 0.15rem;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6e7681;
+}
+
+.node-textbox .box-body {
+  margin: 0;
+  color: #e6edf3;
+}
+
+.node-textbox .box-tag {
+  margin: 0.5rem 0 0;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9px;
+  color: #6e7681;
+}
+
+.node-textbox .box-close-hint {
+  margin: 0.55rem 0 0;
+  font-size: 10px;
+  color: #6e7681;
+}
+
+.box-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0 0 0.55rem;
+}
+
+.box-chip {
+  display: inline-block;
+  padding: 0.12rem 0.4rem;
+  border: 1px solid #30363d;
+  border-radius: 2px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  color: #8b949e;
+}
+
+a.box-chip:hover {
+  color: #e6edf3;
+  border-color: #58a6ff;
+}
+
+.box-chip.is-owasp {
+  color: #58a6ff;
+  border-color: rgba(88, 166, 255, 0.45);
+}
+
+.box-chip.is-atlas {
+  color: #d2a8ff;
+  border-color: rgba(210, 168, 255, 0.4);
+}
+
+.box-resources {
+  margin: 0.55rem 0 0;
+  padding-top: 0.45rem;
+  border-top: 1px solid #30363d;
+}
+
+.box-resources .box-label {
+  margin-bottom: 0.35rem;
+}
+
+.box-link-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.box-link-list li {
+  margin: 0 0 0.3rem;
+}
+
+.box-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  color: #58a6ff;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.box-link:hover {
+  text-decoration: underline;
+}
+
+.box-link-kind {
+  flex: 0 0 auto;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6e7681;
+}
+
+.node-textbox.is-attack-info .box-link-kind.is-tool,
+.node-textbox.is-attack .box-link-kind.is-tool {
+  color: #f85149;
+}
+
+.node-textbox.is-defence .box-link-kind.is-tool {
+  color: #3fb950;
+}
